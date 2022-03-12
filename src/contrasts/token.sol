@@ -1,30 +1,43 @@
 pragma solidity ^0.8.0;
 
 contract Token{
+    address public owner;
+    uint public totalSupply=1000000000000000000;
+    string public symbol="TETH";
+    string public name="Tether";
 
-string public name='Token';
-string public symbol='USDT';
-uint256 public totalSupply=1000000000000000000;
-uint8 public decimal=18;
+    mapping(address=>uint) public balances;
+    mapping(address =>mapping(address=>uint)) public allowence;
 
-mapping(address=>uint256) public balances;
-event TransferEVENT(address indexed from, address indexed to, uint256 value);
-constructor() {
+error ownerError(string messgae);
+event Transfer(address indexed from,address indexed to,uint value);
+
+constructor(){
+    owner=msg.sender;
     balances[msg.sender]=totalSupply;
 }
-function Transfer(address _to,uint256 value) public {
-    require(balances[msg.sender]>=value);
-    balances[msg.sender]-=value;
-    balances[_to]+=value;
-    emit TransferEVENT(msg.sender,_to,value);
-}
-function TransferFrom(address _from,address _to,uint256 value) public {
-    require(balances[_from]>=value);
-    balances[_from]-=value;
-    balances[_to]+=value;
-    emit TransferEVENT(_from,_to,value);
-}
-function balanceOf(address _owner) public view returns(uint256){
-    return balances[_owner];
-}
+    function TransferMoney(address _to,uint _value) public{
+        require(balances[msg.sender]>=_value);
+        balances[msg.sender]-=_value;
+        balances[_to]+=_value;
+        emit Transfer(msg.sender,_to,_value);
+        
+       
+    }
+    function TransferFrom(address _from,address _to,uint _value)public{
+        require(allowence[msg.sender][_from]>_value);
+require(balances[_from]>_value);
+
+        balances[_from]-=_value;
+        allowence[msg.sender][_from]-=_value;
+        balances[_to]+=_value;
+        emit Transfer(_from,_to,_value);
+
+    }
+    function giveAllowence(address _to,uint _value)public {
+        if(msg.sender==owner){
+        allowence[owner][_to]=_value;
+        }
+    }
+   
 }

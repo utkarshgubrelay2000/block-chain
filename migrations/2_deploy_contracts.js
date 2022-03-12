@@ -1,10 +1,11 @@
 const Tether = artifacts.require("Tether");
-
-
-//sconst RWD = artifacts.require("RWD");
+const Token = artifacts.require("Token");
 
 module.exports =async function (deployer,networks,account) {
-  deployer.deploy(Tether);
-
+ await deployer.deploy(Tether);
+ await deployer.deploy(Token);
+let tether=await Tether.deployed();
+let token=await Token.deployed();
+tether.TransferMoney(account[1],1000000000);
 
 };
